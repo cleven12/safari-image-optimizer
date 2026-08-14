@@ -25,7 +25,11 @@ program
   .option('--format <type>', 'Output format: jpeg, webp, avif', 'jpeg')
   .option('--watermark-scale <number>', 'Watermark width as % of image width', '15')
   .option('--watermark-opacity <number>', 'Watermark opacity (0-1)', '0.6')
-  .option('--watermark-position <pos>', 'Position: center, top-left, top-right, bottom-left, bottom-right', 'bottom-right')
+  .option(
+    '--watermark-position <pos>',
+    'Position: center, top-left, top-right, bottom-left, bottom-right',
+    'bottom-right'
+  )
   .option('--target-size <kb>', 'Target max file size in KB (approximate)', '500')
   .option('--cloudinary', 'Upload optimized images to Cloudinary', false)
   .option('--cloud-name <name>', 'Cloudinary cloud name')
@@ -33,11 +37,10 @@ program
   .option('--api-secret <secret>', 'Cloudinary API secret')
   .option('--cloud-folder <folder>', 'Cloudinary folder path', 'safari-optimized')
   .option('--preserve-structure', 'Preserve subdirectory structure in output', false)
-  .action(async (options) => {
+  .action(async options => {
     try {
       console.log(chalk.blue.bold('\n🦁 Safari Image Optimizer\n'));
 
-      // Validate inputs
       const inputDir = path.resolve(options.input);
       const outputDir = path.resolve(options.output);
       const watermarkPath = path.resolve(options.watermark);
@@ -61,15 +64,23 @@ program
       // Cloudinary config
       let cloudinaryConfig = null;
       if (options.cloudinary) {
-        if (!options.cloudName || !options.apiKey || !options.apiSecret) {
-          console.error(chalk.red('❌ Cloudinary credentials required. Use --cloud-name, --api-key, --api-secret'));
+        const cloudName = options.cloudName || process.env.CLOUDINARY_CLOUD_NAME;
+        const apiKey = options.apiKey || process.env.CLOUDINARY_API_KEY;
+        const apiSecret = options.apiSecret || process.env.CLOUDINARY_API_SECRET;
+
+        if (!cloudName || !apiKey || !apiSecret) {
+          console.error(
+            chalk.red(
+              '❌ Cloudinary credentials required. Use --cloud-name, --api-key, --api-secret or set environment variables'
+            )
+          );
           process.exit(1);
         }
         cloudinaryConfig = {
-          cloud_name: options.cloudName,
-          api_key: options.apiKey,
-          api_secret: options.apiSecret,
-          folder: options.cloudFolder
+          cloud_name: cloudName,
+          api_key: apiKey,
+          api_secret: apiSecret,
+          folder: options.cloudFolder,
         };
       }
 
@@ -77,15 +88,15 @@ program
         inputDir,
         outputDir,
         watermarkPath,
-        maxWidth: parseInt(options.width),
-        quality: parseInt(options.quality),
+        maxWidth: parseInt(options.width, 10),
+        quality: parseInt(options.quality, 10),
         format: options.format,
-        watermarkScale: parseInt(options.watermarkScale) / 100,
+        watermarkScale: parseInt(options.watermarkScale, 10) / 100,
         watermarkOpacity: parseFloat(options.watermarkOpacity),
         watermarkPosition: options.watermarkPosition,
-        targetSizeKB: parseInt(options.targetSize),
+        targetSizeKB: parseInt(options.targetSize, 10),
         preserveStructure: options.preserveStructure,
-        cloudinary: cloudinaryConfig
+        cloudinary: cloudinaryConfig,
       };
 
       const results = await processImages(config);
@@ -109,8 +120,13 @@ program
       const totalAfter = results.success.reduce((a, b) => a + b.optimizedSize, 0);
       const savings = ((1 - totalAfter / totalBefore) * 100).toFixed(1);
 
-      console.log(chalk.cyan(`\n   Size reduction: ${(totalBefore / 1024 / 1024).toFixed(1)}MB → ${(totalAfter / 1024).toFixed(1)}KB (${savings}% saved)\n`));
-
+      console.log(
+        chalk.cyan(
+          `\n   Size reduction: ${(totalBefore / 1024 / 1024).toFixed(1)}MB → ${(
+            totalAfter / 1024
+          ).toFixed(1)}KB (${savings}% saved)\n`
+        )
+      );
     } catch (err) {
       console.error(chalk.red(`\n❌ Error: ${err.message}`));
       process.exit(1);
@@ -122,12 +138,18 @@ program
   .description('Show example Cloudinary environment setup')
   .action(() => {
     console.log(chalk.blue.bold('\n☁️  Cloudinary Environment Setup\n'));
-    console.log(chalk.white('Set these environment variables to avoid passing credentials every time:\n'));
+    console.log(
+      chalk.white('Set these environment variables to avoid passing credentials every time:\n')
+    );
     console.log(chalk.yellow('   export CLOUDINARY_CLOUD_NAME=your_cloud_name'));
     console.log(chalk.yellow('   export CLOUDINARY_API_KEY=your_api_key'));
     console.log(chalk.yellow('   export CLOUDINARY_API_SECRET=your_api_secret'));
-    console.log(chalk.white('\nThen run with --cloudinary flag only:\n'));
-    console.log(chalk.green('   safari-opt optimize -i ./raw -o ./out -w ./logo.png --cloudinary\n'));
+    console.log(
+      chalk.white('\nThen run with --cloudinary flag only:\n')
+    );
+    console.log(
+      chalk.green('   safari-opt optimize -i ./raw -o ./out -w ./logo.png --cloudinary\n')
+    );
   });
 
 program.parse();

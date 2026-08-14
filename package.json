@@ -2,25 +2,101 @@
   "name": "safari-image-optimizer",
   "version": "1.0.0",
   "description": "Batch optimize safari images: resize, compress, watermark, and upload to Cloudinary",
-  "main": "bin/safari-opt.js",
+  "main": "lib/processor.js",
   "bin": {
     "safari-opt": "./bin/safari-opt.js"
   },
   "scripts": {
-    "start": "node bin/safari-opt.js"
+    "start": "node bin/safari-opt.js",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
+    "test:ci": "jest --ci --coverage --reporters=default --reporters=jest-junit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky install || true",
+    "prepublishOnly": "npm run lint && npm run test:ci && npm run format:check",
+    "release": "standard-version",
+    "release:minor": "standard-version --release-as minor",
+    "release:major": "standard-version --release-as major"
   },
-  "keywords": ["image-optimization", "safari", "cloudinary", "watermark", "compression", "cli"],
-  "author": "",
+  "keywords": [
+    "image-optimization",
+    "safari",
+    "cloudinary",
+    "watermark",
+    "compression",
+    "cli",
+    "batch-processing",
+    "webp",
+    "avif",
+    "mozjpeg"
+  ],
+  "author": "Cleven Godson <your@email.com>",
   "license": "MIT",
-  "dependencies": {
-    "sharp": "^0.33.5",
-    "cloudinary": "^2.6.0",
-    "commander": "^13.0.0",
-    "chalk": "^4.1.2",
-    "cli-progress": "^3.12.0",
-    "mime-types": "^2.1.35"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cleven12/safari-image-optimizer.git"
   },
+  "bugs": {
+    "url": "https://github.com/cleven12/safari-image-optimizer/issues"
+  },
+  "homepage": "https://github.com/cleven12/safari-image-optimizer#readme",
   "engines": {
     "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "cli-progress": "^3.12.0",
+    "cloudinary": "^2.6.0",
+    "commander": "^13.0.0",
+    "mime-types": "^2.1.35",
+    "sharp": "^0.33.5"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-jest": "^28.11.0",
+    "eslint-plugin-node": "^11.1.0",
+    "husky": "^8.0.3",
+    "jest": "^29.7.0",
+    "jest-junit": "^16.0.0",
+    "lint-staged": "^15.5.0",
+    "prettier": "^3.5.0",
+    "standard-version": "^9.5.0"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coverageDirectory": "coverage",
+    "collectCoverageFrom": [
+      "lib/**/*.js",
+      "bin/**/*.js",
+      "!lib/**/*.test.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 70,
+        "functions": 70,
+        "lines": 70,
+        "statements": 70
+      }
+    },
+    "testMatch": [
+      "**/__tests__/**/*.test.js",
+      "**/?(*.)+(spec|test).js"
+    ],
+    "verbose": true,
+    "clearMocks": true
   }
 }

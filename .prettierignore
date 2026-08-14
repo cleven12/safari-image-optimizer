@@ -1,0 +1,6 @@
+node_modules/
+coverage/
+optimized/
+raw-safari-images/
+*.log
+CHANGELOG.md

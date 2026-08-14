@@ -1,35 +1,68 @@
 # 🦁 Safari Image Optimizer
 
-A CLI tool to batch-process high-resolution safari/wildlife images (4–8MB) into web-optimized, watermarked assets ready for Being used in deployment i.e cloudinary cdn.
+[![npm version](https://badge.fury.io/js/safari-image-optimizer.svg)](https://www.npmjs.com/package/safari-image-optimizer)
+[![CI](https://github.com/cleven12/safari-image-optimizer/actions/workflows/ci.yml/badge.svg)](https://github.com/cleven12/safari-image-optimizer/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/cleven12/safari-image-optimizer/branch/main/graph/badge.svg)](https://codecov.io/gh/cleven12/safari-image-optimizer)
+[![CodeQL](https://github.com/cleven12/safari-image-optimizer/actions/workflows/codeql.yml/badge.svg)](https://github.com/cleven12/safari-image-optimizer/actions/workflows/codeql.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/node/v/safari-image-optimizer)](https://nodejs.org/)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
 
-## Features
+> Batch optimize safari/wildlife images (4–8MB) into web-ready, watermarked assets — with one-command Cloudinary deployment.
 
-- **Batch processing** — handles entire directories recursively
-- **Smart resize** — scales down to web-friendly dimensions (default 1920px width)
-- **Aggressive compression** — targets ~500KB per image with auto quality fallback
-- **Watermark overlay** — adds your org logo with configurable position, size, and opacity
-- **Format conversion** — JPEG, WebP, or AVIF output
-- **Cloudinary upload** — one-command deploy to your Cloudinary account
-- **SEO-ready** — auto-tags and contextual metadata on upload
-- **Preserves structure** — optional folder hierarchy preservation
+Built for safari operators, wildlife photographers, and conservation orgs who need to process hundreds of high-res images for web galleries, CMS uploads, and SEO-optimized delivery.
 
-## Install
+## ✨ Features
+
+- **🖼️ Batch Processing** — recursively handles entire directories of raw safari images
+- **📐 Smart Resize** — scales 4000–6000px images down to web-friendly dimensions (default 1920px)
+- **🗜️ Aggressive Compression** — targets ~500KB per image with automatic quality fallback
+- **💧 Watermark Overlay** — adds your org logo with 5 positions, configurable size & opacity
+- **🔄 Format Conversion** — output as JPEG (progressive), WebP, or AVIF
+- **☁️ Cloudinary Upload** — one-command deploy with SEO metadata and auto-tagging
+- **📁 Structure Preservation** — optional folder hierarchy retention
+- **🧪 Tested** — 70%+ coverage with unit, integration, and CLI tests
+- **🚀 CI/CD Ready** — GitHub Actions, Dependabot, CodeQL, automated releases
+
+## 📦 Install
+
+### Global (recommended)
 
 ```bash
+npm install -g safari-image-optimizer
+```
+
+### Local project
+
+```bash
+npm install --save-dev safari-image-optimizer
+npx safari-opt --help
+```
+
+### From source
+
+```bash
+git clone https://github.com/cleven12/safari-image-optimizer.git
+cd safari-image-optimizer
 npm install
-# or globally
 npm link
 ```
 
-## Quick Start
+## 🚀 Quick Start
 
 ### 1. Prepare your watermark
-Create a **PNG with transparency** of your organization logo. Recommended: 500–1000px wide, transparent background.
 
-### 2. Optimize only (no upload)
+Create a **PNG with transparency** of your organization logo.
+
+**Recommended specs:**
+- Format: PNG with alpha channel
+- Size: 500–1000px wide
+- Background: transparent
+
+### 2. Optimize only (dry run)
 
 ```bash
-node bin/safari-opt.js optimize \
+safari-opt optimize \
   -i ./raw-safari-images \
   -o ./optimized \
   -w ./logo.png \
@@ -42,12 +75,27 @@ node bin/safari-opt.js optimize \
 ### 3. Optimize + upload to Cloudinary
 
 ```bash
-node bin/safari-opt.js optimize \
+export CLOUDINARY_CLOUD_NAME=your_cloud_name
+export CLOUDINARY_API_KEY=your_api_key
+export CLOUDINARY_API_SECRET=your_api_secret
+
+safari-opt optimize \
   -i ./raw-safari-images \
   -o ./optimized \
   -w ./logo.png \
   --width 1920 \
   --quality 85 \
+  --cloudinary \
+  --cloud-folder safari-2026
+```
+
+Or pass credentials inline:
+
+```bash
+safari-opt optimize \
+  -i ./raw \
+  -o ./out \
+  -w ./logo.png \
   --cloudinary \
   --cloud-name your_cloud_name \
   --api-key your_api_key \
@@ -55,17 +103,7 @@ node bin/safari-opt.js optimize \
   --cloud-folder safari-2026
 ```
 
-Or use environment variables:
-
-```bash
-export CLOUDINARY_CLOUD_NAME=your_cloud_name
-export CLOUDINARY_API_KEY=your_api_key
-export CLOUDINARY_API_SECRET=your_api_secret
-
-node bin/safari-opt.js optimize -i ./raw -o ./out -w ./logo.png --cloudinary
-```
-
-## Options
+## 📋 Options
 
 | Flag | Description | Default |
 |------|-------------|---------|
@@ -78,12 +116,12 @@ node bin/safari-opt.js optimize -i ./raw -o ./out -w ./logo.png --cloudinary
 | `--watermark-scale <number>` | Watermark width as % of image width | `15` |
 | `--watermark-opacity <number>` | Watermark opacity (0.0–1.0) | `0.6` |
 | `--watermark-position <pos>` | `center`, `top-left`, `top-right`, `bottom-left`, `bottom-right` | `bottom-right` |
-| `--target-size <kb>` | Target max file size in KB (auto-reduces quality if exceeded) | `500` |
+| `--target-size <kb>` | Target max file size in KB (auto-reduces quality) | `500` |
 | `--preserve-structure` | Keep subdirectory structure in output | `false` |
 | `--cloudinary` | Enable Cloudinary upload | `false` |
 | `--cloud-folder <folder>` | Cloudinary destination folder | `safari-optimized` |
 
-## Example Output
+## 📊 Example Output
 
 ```
 🦁 Safari Image Optimizer
@@ -110,18 +148,87 @@ node bin/safari-opt.js optimize -i ./raw -o ./out -w ./logo.png --cloudinary
    Uploaded: 47, Failed: 0
 ```
 
-## Supported Input Formats
+## 🐳 Docker
 
-JPEG, PNG, TIFF, WebP, AVIF, HEIC
+```bash
+# Build
+docker build -t safari-opt .
 
-## Why This Works for Safari Images
+# Run
+docker run -v $(pwd)/raw:/input -v $(pwd)/out:/output -v $(pwd)/logo.png:/watermark.png \
+  safari-opt optimize -i /input -o /output -w /watermark.png --width 1920
+```
 
-Safari cameras (especially DSLRs/mirrorless) produce 4–8MB JPEGs at 4000–6000px wide. For web use:
-- **1920px width** is plenty for full-width hero images
-- **85% quality** with `mozjpeg` keeps details while crushing file size
-- **Auto quality fallback** drops quality by 5% increments if the target size is exceeded
-- **Progressive JPEG** improves perceived load speed
+## 🧪 Development
 
-## License
+```bash
+# Install dependencies
+npm install
 
-MIT
+# Run tests
+npm test
+
+# Run tests with coverage
+npm run test:ci
+
+# Watch mode
+npm run test:watch
+
+# Lint
+npm run lint
+npm run lint:fix
+
+# Format
+npm run format
+npm run format:check
+
+# Release (maintainers only)
+npm run release
+```
+
+## 🏗️ Architecture
+
+```
+┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│   CLI Input     │────▶│  Image Processor │────▶│  Cloudinary     │
+│  (Commander.js) │     │    (Sharp/libvips)│    │    Upload       │
+└─────────────────┘     └──────────────────┘     └─────────────────┘
+        │                        │                        │
+        ▼                        ▼                        ▼
+   -i ./raw                Resize 1920px            SEO metadata
+   -o ./out                Compress 85%             Auto-tags
+   -w logo.png             Watermark overlay        Folder structure
+   --format webp            Quality fallback        Public URLs
+```
+
+## 📁 Supported Formats
+
+**Input:** JPEG, PNG, TIFF, WebP, AVIF, HEIC  
+**Output:** JPEG (progressive), WebP, AVIF
+
+## 🔧 Why This Works for Safari Images
+
+Safari cameras (DSLRs, mirrorless, even modern smartphones) produce 4–8MB JPEGs at 4000–6000px. For web use:
+
+| Problem | Solution |
+|---------|----------|
+| **Too large** | Resize to 1920px max — plenty for full-width hero images |
+| **Slow loading** | Progressive JPEG + mozjpeg keeps quality while crushing size |
+| **Complex scenes** | Auto quality fallback drops by 5% increments until target size is met |
+| **Brand protection** | Watermark scales with image (15% width) — consistent across orientations |
+| **SEO** | Cloudinary upload includes `alt` text, `source` context, and auto-tags |
+
+## 🤝 Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, commit conventions, and release process.
+
+## 📄 License
+
+[MIT](LICENSE) © Cleven Godson
+
+## 🙏 Acknowledgments
+
+- [Sharp](https://sharp.pixelplumbing.com/) — High-performance image processing
+- [libvips](https://www.libvips.org/) — Underlying image processing library
+- [Cloudinary](https://cloudinary.com/) — Image hosting and delivery
+- [Commander.js](https://github.com/tj/commander.js/) — CLI framework

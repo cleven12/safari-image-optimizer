@@ -1,6 +1,47 @@
+# Dependencies
 node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build outputs
 optimized/
-raw-safari-images/
-.env
+dist/
+build/
+
+# Test outputs
+coverage/
 *.log
+junit.xml
+
+# Input data (user-specific)
+raw-safari-images/
+*.jpg
+*.jpeg
+*.png
+*.webp
+*.avif
+*.tiff
+*.heic
+!__tests__/fixtures/**
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS files
 .DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary
+tmp/
+temp/
+*.tmp
