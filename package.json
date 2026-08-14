@@ -1,0 +1,26 @@
+{
+  "name": "safari-image-optimizer",
+  "version": "1.0.0",
+  "description": "Batch optimize safari images: resize, compress, watermark, and upload to Cloudinary",
+  "main": "bin/safari-opt.js",
+  "bin": {
+    "safari-opt": "./bin/safari-opt.js"
+  },
+  "scripts": {
+    "start": "node bin/safari-opt.js"
+  },
+  "keywords": ["image-optimization", "safari", "cloudinary", "watermark", "compression", "cli"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "sharp": "^0.33.5",
+    "cloudinary": "^2.6.0",
+    "commander": "^13.0.0",
+    "chalk": "^4.1.2",
+    "cli-progress": "^3.12.0",
+    "mime-types": "^2.1.35"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

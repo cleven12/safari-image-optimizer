@@ -1,0 +1,6 @@
+node_modules/
+optimized/
+raw-safari-images/
+.env
+*.log
+.DS_Store
